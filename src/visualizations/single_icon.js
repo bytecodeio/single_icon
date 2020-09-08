@@ -1,23 +1,88 @@
 looker.plugins.visualizations.add({
     options: {
         icon_uri: {
-          section: "Styling",
+          section: "Icon",
           type: "string",
           label: "Icon URI",
           display: "text",
           default: "https://upload-icon.s3.us-east-2.amazonaws.com/uploads/icons/png/4987286121594941299-512.png"
         },
+        icon_height: {
+          section: "Icon",
+          type: "string",
+          label: "Icon Height",
+          display: "text",
+          default: "30px"
+        },
+        icon_width: {
+          section: "Icon",
+          type: "string",
+          label: "Icon Width",
+          display: "text",
+          default: "30px"
+        },
+
         background: {
             section: "Styling",
             type: "array",
             label: "Fill color",
-            display: "color"
+            display: "color",
+            default: "coral"
         },
-        top_label: {
-          section: "Data",
+        border_radius: {
+          section: "Styling",
+          type: "string",
+          label: "Border Radius",
+          display: "text",
+          default: "20px"
+        },
+        title_label: {
+          section: "Title",
           type: "string",
           label: "Label",
           placeholder: "Single Value"
+        },
+        title_font_size: {
+          section: "Title",
+          type: "string",
+          label: "Font Size",
+          placeholder: "16px",
+          default: "16px"
+        },
+        title_font_family: {
+          section: "Title",
+          type: "string",
+          label: "Font Family",
+          placeholder: "Open Sans",
+          default: "Open Sans"
+        },
+        title_color: {
+          section: "Title",
+          type: "array",
+          label: "Fill color",
+          display: "color",
+          default: "black"
+        },
+        value_font_size: {
+          section: "Value",
+          type: "string",
+          label: "Font Size",
+          placeholder: "16px",
+          default: "16px"
+        },
+        value_color: {
+          section: "Value",
+          type: "array",
+          label: "Fill color",
+          display: "color",
+          default: "black"
+        },
+        value_font_family: {
+          section: "Value",
+          type: "string",
+          label: "Font Family",
+          placeholder: "Open Sans",
+          default: "Open Sans"
         }
     },
 	create: function(element, config){
@@ -35,7 +100,7 @@ looker.plugins.visualizations.add({
 
         options["headerData"] =
         {
-            section: "Data",
+            section: "Value",
             type: "string",
             label: "Measure for Header",
             display: "select",
@@ -63,20 +128,22 @@ looker.plugins.visualizations.add({
             src: url( https://fonts.gstatic.com/s/opensans/v17/mem8YaGs126MiZpBA-UFVZ0b.woff2 );
           }
           div {
-            font-family: Open Sans;
-            background-color: coral;
+            background-color: ${config.background};
           }
           img {
-            height: 30px;
-            width: 30px;
+            height: ${config.icon_height};
+            width: ${config.icon_width};
             margin: 10px 10px auto;
           }
           .headerDiv {
             display: flex;
             justify-content: space-between;
+            font-family: ${config.title_font_family};
+            color: ${config.title_color};
+            font-size: ${config.title_font_size};
           }
           #vis {
-            border-radius: 10px;
+            border-radius: ${config.border_radius};
             padding: 10px;
             width: calc(100% - 40px);
             display: flex;
@@ -87,7 +154,9 @@ looker.plugins.visualizations.add({
             margin-top: 10px;
           }
           .value {
-            font-size: 30px;
+            font-family: ${config.value_font_family};
+            color: ${config.value_color};
+            font-size: ${config.value_font_size};
           }
           ;`
 
@@ -97,7 +166,7 @@ looker.plugins.visualizations.add({
         headerDiv.setAttribute('class','headerDiv');
 
         var labelSpan = document.createElement('span');
-        labelSpan.innerHTML = config.top_label;
+        labelSpan.innerHTML = config.title_label;
         headerDiv.appendChild(labelSpan)
 
         var img = document.createElement('img')
@@ -110,8 +179,6 @@ looker.plugins.visualizations.add({
 
          element.appendChild(headerDiv)
          element.appendChild(valueDiv)
-        
-    
        
 		doneRendering()
 	}

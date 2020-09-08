@@ -5,7 +5,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 let webpackConfig = {
     mode: 'production',
     entry: {
-        sparkline: './src/visualizations/sparkline.js'
+        single_icon: './src/visualizations/single_icon.js'
     },
     output: {
         filename: '[name].js',

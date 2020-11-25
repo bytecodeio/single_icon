@@ -21,13 +21,26 @@ looker.plugins.visualizations.add({
           display: "text",
           default: "30px"
         },
-
+        icon_note: {
+          section: "Icon",
+          type: "string",
+          label: "Icon Hover Note",
+          display: "text",
+          default: ""
+        },
         background: {
             section: "Styling",
             type: "array",
             label: "Fill color",
             display: "color",
             default: "coral"
+        },
+        alignment: {
+          section: "Styling",
+          type: "string",
+          label: "Value text alignment",
+          display: "text",
+          default: "left"
         },
         border_radius: {
           section: "Styling",
@@ -56,12 +69,26 @@ looker.plugins.visualizations.add({
           placeholder: "Open Sans",
           default: "Open Sans"
         },
+        title_font_weight: {
+          section: "Title",
+          type: "string",
+          label: "Font Weight",
+          placeholder: "normal",
+          default: "normal"
+        },
         title_color: {
           section: "Title",
           type: "array",
           label: "Fill color",
           display: "color",
           default: "black"
+        },
+        headerMarginLeft: {
+          section: "Title",
+          type: "string",
+          label: "Header left margin",
+          display: "text",
+          default: "0px"
         },
         value_font_size: {
           section: "Value",
@@ -83,6 +110,13 @@ looker.plugins.visualizations.add({
           label: "Font Family",
           placeholder: "Open Sans",
           default: "Open Sans"
+        },
+        value_font_weight: {
+          section: "Value",
+          type: "string",
+          label: "Font Weight",
+          placeholder: "normal",
+          default: "bold"
         }
     },
 	create: function(element, config){
@@ -96,30 +130,25 @@ looker.plugins.visualizations.add({
             let value =  field.name
             return {[key]: value}
         })
+
         let options = this.options;
 
         options["headerData"] =
         {
             section: "Value",
             type: "string",
-            label: "Measure for Header",
+            label: "Measures for Header",
             display: "select",
             values: values,
-        }
-        if (config.headerData == null) {
-            this.trigger('registerOptions', options) // register options with parent page to update visConfig
-        }
+        };
+        
+        this.trigger('registerOptions', options); // register options with parent page to update visConfig
         
         // Grab the first cell of the data
         var firstRow = data[0];
         var firstCell = firstRow[config.headerData];
         var value = LookerCharts.Utils.htmlForCell(firstCell);
-        
-        
-
-        //  Montserrat:
-        //  https://fonts.gstatic.com/s/montserrat/v14/JTUSjIg1_i6t8kCHKm459Wlhyw.woff2);}'+
-         
+                 
         var styleEl = document.createElement('style');
         styleEl.setAttribute('type',"text/css")
         styleEl.innerHTML = `
@@ -129,6 +158,7 @@ looker.plugins.visualizations.add({
           }
           div {
             background-color: ${config.background};
+            text-align: ${config.alignment}
           }
           img {
             height: ${config.icon_height};
@@ -141,6 +171,7 @@ looker.plugins.visualizations.add({
             font-family: ${config.title_font_family};
             color: ${config.title_color};
             font-size: ${config.title_font_size};
+            font-weight: ${config.title_font_weight};
           }
           #vis {
             border-radius: ${config.border_radius};
@@ -152,11 +183,49 @@ looker.plugins.visualizations.add({
           }
           span {
             margin-top: 10px;
+            margin-left: ${config.headerMarginLeft}
+          }
+          a {
+            font-family: ${config.value_font_family};
+            color: ${config.value_color};
+            font-size: ${config.value_font_size};
+            font-weight: ${config.value_font_weight};
+            text-decoration: none;
           }
           .value {
             font-family: ${config.value_font_family};
             color: ${config.value_color};
             font-size: ${config.value_font_size};
+            text-decoration: none;
+            font-weight: ${config.value_font_weight};
+          }        
+          .headerDiv .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 100;
+            right: 65px;
+            opacity: 0;
+            transition: opacity 0.3s;
+          }
+          
+          .headerDiv .tooltiptext::after {
+            content: "";
+            position: absolute;
+            right: 65px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+          }
+          
+          .headerDiv:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
           }
           ;`
 
@@ -172,6 +241,13 @@ looker.plugins.visualizations.add({
         var img = document.createElement('img')
         img.setAttribute('src',config.icon_uri)
         headerDiv.appendChild(img)
+
+        if (config.icon_note && config.icon_note.length > 0) {
+          var tooltipSpan = document.createElement('span');
+          tooltipSpan.setAttribute('class','tooltiptext');
+          tooltipSpan.innerHTML = config.icon_note;
+          headerDiv.appendChild(tooltipSpan)
+        }
 
         var valueDiv = document.createElement('div')
         valueDiv.setAttribute('class','value')

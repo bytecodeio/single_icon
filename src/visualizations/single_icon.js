@@ -22,13 +22,6 @@ looker.plugins.visualizations.add({
       display: "text",
       default: "30px",
     },
-    icon_note: {
-      section: "Icon",
-      type: "string",
-      label: "Icon Hover Note",
-      display: "text",
-      default: "",
-    },
     icon_left_margin: {
       section: "Icon",
       type: "string",
@@ -137,6 +130,34 @@ looker.plugins.visualizations.add({
       label: "Font Weight",
       placeholder: "normal",
       default: "bold",
+    },
+    lower_note: {
+      section: "Notes",
+      type: "string",
+      label: "Note beneath text",
+      display: "text",
+      default: "",
+    },
+    lower_note_margin: {
+      section: "Notes",
+      type: "string",
+      label: "Lower note upper margin",
+      display: "text",
+      default: "10px",
+    },
+    lower_note_text_size: {
+      section: "Notes",
+      type: "string",
+      label: "Lower note text size",
+      display: "text",
+      default: "10px",
+    },
+    icon_note: {
+      section: "Notes",
+      type: "string",
+      label: "Icon Hover Note",
+      display: "text",
+      default: "",
     },
   },
   create: function (element, config) {
@@ -257,6 +278,11 @@ looker.plugins.visualizations.add({
             visibility: visible;
             opacity: 1;
           }
+          .verticalContainer{
+            display: flex; /* or inline-flex */
+            flex-direction: column;
+            justify-content: space-between;
+          }
           .container {
             display: flex; /* or inline-flex */
             flex-direction: row;
@@ -266,6 +292,11 @@ looker.plugins.visualizations.add({
           .title_value {
             display: flex;
             flex-direction: column;
+          }
+          .lower_note {
+            align-self: center;
+            margin-top: ${config.lower_note_margin};
+            font-size: ${config.lower_note_text_size};
           }
           ;`;
 
@@ -295,10 +326,18 @@ looker.plugins.visualizations.add({
       valueDiv.setAttribute("class", "value");
       valueDiv.innerHTML = value;
 
+      var noteDiv = document.createElement("div");
+      noteDiv.setAttribute("class","lower_note")
+      noteDiv.innerHTML = config.lower_note
+
       element.appendChild(headerDiv);
       element.appendChild(valueDiv);
+      if (config.lower_note) element.appendChild(noteDiv)
     } else {
       // left aligned icon
+      var verticalContainer = document.createElement("div");
+      verticalContainer.setAttribute("class","verticalContainer")
+
       var containerDiv = document.createElement("div");
       containerDiv.setAttribute("class", "container");
 
@@ -332,7 +371,18 @@ looker.plugins.visualizations.add({
       titleValueDiv.appendChild(valueDiv);
       containerDiv.appendChild(titleValueDiv);
 
-      element.appendChild(containerDiv);
+      if(config.lower_note) {
+        var noteDiv = document.createElement("div");
+        noteDiv.setAttribute("class","lower_note")
+        noteDiv.innerHTML = `<em>${config.lower_note}</em>`
+
+        verticalContainer.appendChild(containerDiv)
+        verticalContainer.appendChild(noteDiv)
+        element.appendChild(verticalContainer);
+      } else {
+        element.appendChild(containerDiv)
+      }
+
     }
     doneRendering();
   },

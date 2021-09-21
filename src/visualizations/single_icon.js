@@ -138,6 +138,13 @@ looker.plugins.visualizations.add({
       display: "text",
       default: "",
     },
+    note_color: {
+      section: "Notes",
+      type: "array",
+      label: "Text color",
+      display: "color",
+      default: "black",
+    },
     lower_note_margin: {
       section: "Notes",
       type: "string",
@@ -294,6 +301,7 @@ looker.plugins.visualizations.add({
             flex-direction: column;
           }
           .lower_note {
+            color: ${config.note_color};
             align-self: center;
             margin-top: ${config.lower_note_margin};
             font-size: ${config.lower_note_text_size};

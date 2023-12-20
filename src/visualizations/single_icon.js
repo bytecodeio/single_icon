@@ -5,6 +5,7 @@ looker.plugins.visualizations.add({
       type: "string",
       label: "Icon URI",
       display: "text",
+      placeholder: "https://upload-icon.s3.us-east-2.amazonaws.com/uploads/icons/png/4987286121594941299-512.png",
       default:
         "https://upload-icon.s3.us-east-2.amazonaws.com/uploads/icons/png/4987286121594941299-512.png",
     },
@@ -61,12 +62,6 @@ looker.plugins.visualizations.add({
       label: "Border Radius",
       display: "text",
       default: "20px",
-    },
-    title_label: {
-      section: "Title",
-      type: "string",
-      label: "Label",
-      placeholder: "Single Value",
     },
     title_font_size: {
       section: "Title",
@@ -185,6 +180,7 @@ looker.plugins.visualizations.add({
       return { [key]: value };
     });
 
+    // console.log(Object.values(values[0])[0]);
     let options = this.options;
 
     options["headerData"] = {
@@ -193,10 +189,19 @@ looker.plugins.visualizations.add({
       label: "Measures for Header",
       display: "select",
       values: values,
+      default: Object.values(values[0])[0],
     };
 
-    this.trigger("registerOptions", options); // register options with parent page to update visConfig
+    options["title_label"] = {
+      section: "Title",
+      type: "string",
+      label: "Label",
+      placeholder: "Single Value",
+      default: Object.keys(values[0])[0]
+    }
 
+    this.trigger("registerOptions", options); // register options with parent page to update visConfig
+    // console.log(config.headerData);
     // Grab the first cell of the data
     var firstRow = data[0];
     var firstCell = firstRow[config.headerData];
